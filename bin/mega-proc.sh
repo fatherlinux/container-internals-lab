@@ -7,7 +7,7 @@ docker)
   echo "USER        PID %CPU %MEM VSZ    RSS   TTY      STAT START   TIME COMMAND"
   ps aux --forest \
     | grep -v grep \
-    | grep -v container-processes \
+    | grep -v $0 \
     | grep docker \
     | sed 's/.*/&\n/' \
     | sed 's/\(--[a-zA-Z]*\)/\n\t&/g' \
@@ -18,7 +18,7 @@ openshift)
   echo "USER        PID %CPU %MEM VSZ    RSS   TTY      STAT START   TIME COMMAND"
   ps aux --forest \
     | grep -v grep \
-    | grep -v container-processes \
+    | grep -v $0 \
     | grep openshift \
     | sed 's/.*/&\n/' \
     | sed 's/\(--[a-zA-Z]*\)/\n\t&/g' \
@@ -29,7 +29,7 @@ kubernetes)
   echo "USER        PID %CPU %MEM VSZ    RSS   TTY      STAT START   TIME COMMAND"
   ps aux --forest \
     | grep -v grep \
-    | grep -v container-processes \
+    | grep -v $0 \
     | grep kube \
     | sed 's/.*/&\n/' \
     | sed 's/\(--[a-zA-Z]*\)/\n\t&/g' \
