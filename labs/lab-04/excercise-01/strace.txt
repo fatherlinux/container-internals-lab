@@ -1,0 +1,7 @@
+
+Docker Daemon
+strace -f -s1024 -e read,write -p 10510 2>&1 | grep -e "GET " -e "POST " -e "PUT " -e " 200 " -e " 400 "
+
+Containerd
+strace -f -s4096 -e clone,getpid -p 10516
+
