@@ -32,6 +32,7 @@ hostnamectl set-hostname master1.ocp1.dc2.crunchtools.com
 192.168.122.204	node2.ocp1.dc2.crunchtools.com
 192.168.122.205	node3.ocp1.dc2.crunchtools.com
 192.168.122.206	haproxy1.ocp1.dc2.crunchtools.com
+192.168.122.207	storage1.ocp1.dc2.crunchtools.com
 ```
 
 
@@ -54,6 +55,7 @@ ssh-copy-id -i /root/.ssh/root@osp1.dc2.crunchtools.com.pub root@node1.ocp1.dc2.
 ssh-copy-id -i /root/.ssh/root@osp1.dc2.crunchtools.com.pub root@node2.ocp1.dc2.crunchtools.com
 ssh-copy-id -i /root/.ssh/root@osp1.dc2.crunchtools.com.pub root@node3.ocp1.dc2.crunchtools.com
 ssh-copy-id -i /root/.ssh/root@osp1.dc2.crunchtools.com.pub root@haproxy1.ocp1.dc2.crunchtools.com
+ssh-copy-id -i /root/.ssh/root@osp1.dc2.crunchtools.com.pub root@storage1.ocp1.dc2.crunchtools.com
 ```
 
 # subscription manager
