@@ -19,8 +19,8 @@ NETWORKING=YES
 ```
 
 ```
-echo "nameserver 192.168.122.1" > /etc/resolv.conf
 hostnamectl set-hostname master1.ocp1.dc2.crunchtools.com
+echo "nameserver 192.168.122.1" > /etc/resolv.conf
 ```
 
 ```
@@ -79,6 +79,7 @@ atomic-openshift-installer
 # lessons learned
 1. Running a 3 master, 3 node OpenShift environment requires an external haproxy and storage node for the registry
 2. The storage node must be RHEL
-3. Testing to see if the external haproxy can be Atomiic Host. Could not find that information in the docs.
+3. The haproxy node for the masters must be on RHEL. Could not find that information in the docs
+4. hostnamectl overwrites /etc/resolve.conf configuration (not sure why)
 
 # Atomic Tools Container
