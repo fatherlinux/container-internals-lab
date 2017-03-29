@@ -74,5 +74,9 @@ Run the installer
 ```
 atomic-openshift-installer
 ```
+# lessons learned
+1. Running a 3 master, 3 node OpenShift environment requires an external haproxy and storage node for the registry
+2. The storage node must be RHEL
+3. Testing to see if the external haproxy can be Atomiic Host. Could not find that information in the docs.
 
 # Atomic Tools Container
