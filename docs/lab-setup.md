@@ -10,11 +10,14 @@ Configure all IP addresses statically to make things consistent when running the
 192.168.122.204	node3.ocp1.dc2.crunchtools.com
 ```
 
-```/etc/sysconfig/network-scripts/ifcfg-eth0
+
+```
+/etc/sysconfig/network-scripts/ifcfg-eth0
 BOOTPROTO=static
 IPADDR=192.168.122.200
 ONBOOT=yes
--UUID```
+-UUID
+```
 
 ```
 /etc/sysconfig/network
