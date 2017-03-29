@@ -19,6 +19,7 @@ NETWORKING=YES
 ```
 
 ```
+echo "nameserver 192.168.122.1" > /etc/resolv.conf
 hostnamectl set-hostname master1.ocp1.dc2.crunchtools.com
 ```
 
@@ -38,5 +39,29 @@ The nice part about Atomic Host is that it sets the docker storage up for you ah
 ```
 lvextend -l +100%FREE /dev/mapper/rhelah-docker--pool
 ```
+
+# ssh keys
+On an external RHEL box, prepare for install. First, add the above hosts file.
+
+```
+ssh-keygen -f /root/.ssh/root@osp1.dc2.crunchtools.com
+ssh-copy-id -i /root/.ssh/root@osp1.dc2.crunchtools.com.pub root@master1.ocp1.dc2.crunchtools.com
+ssh-copy-id -i /root/.ssh/root@osp1.dc2.crunchtools.com.pub root@master2.ocp1.dc2.crunchtools.com
+ssh-copy-id -i /root/.ssh/root@osp1.dc2.crunchtools.com.pub root@node1.ocp1.dc2.crunchtools.com
+ssh-copy-id -i /root/.ssh/root@osp1.dc2.crunchtools.com.pub root@node2.ocp1.dc2.crunchtools.com
+ssh-copy-id -i /root/.ssh/root@osp1.dc2.crunchtools.com.pub root@node3.ocp1.dc2.crunchtools.com
+```
+
+# subscription manager
+```
+subscription-manager register
+```
+
+
+# openshift
+subscription-manager attach --pool=8a85f9815404b7da0154071f610f73db
+subscription-manager repos --disable="*"
+subscription-manager repos --enable=rhel-7-server-rpms --enable=rhel-7-server-extras-rpms --enable=rhel-7-server-optional-rpms --enable=rhel-7-server-supplementary-rpms --enable=rhel-7-server-rh-common-rpms --enable="rhel-7-server-ose-3.4-rpms"
+
 
 # Atomic Tools Container
