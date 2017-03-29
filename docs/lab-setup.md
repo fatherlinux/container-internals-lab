@@ -27,9 +27,10 @@ hostnamectl set-hostname master1.ocp1.dc2.crunchtools.com
 /etc/hosts
 192.168.122.200	master1.ocp1.dc2.crunchtools.com
 192.168.122.201	master2.ocp1.dc2.crunchtools.com
-192.168.122.202	node1.ocp1.dc2.crunchtools.com
-192.168.122.203	node2.ocp1.dc2.crunchtools.com
-192.168.122.204	node3.ocp1.dc2.crunchtools.com
+192.168.122.202	master3.ocp1.dc2.crunchtools.com
+192.168.122.203	node1.ocp1.dc2.crunchtools.com
+192.168.122.204	node2.ocp1.dc2.crunchtools.com
+192.168.122.205	node3.ocp1.dc2.crunchtools.com
 ```
 
 
@@ -47,6 +48,7 @@ On an external RHEL box, prepare for install. First, add the above hosts file.
 ssh-keygen -f /root/.ssh/root@osp1.dc2.crunchtools.com
 ssh-copy-id -i /root/.ssh/root@osp1.dc2.crunchtools.com.pub root@master1.ocp1.dc2.crunchtools.com
 ssh-copy-id -i /root/.ssh/root@osp1.dc2.crunchtools.com.pub root@master2.ocp1.dc2.crunchtools.com
+ssh-copy-id -i /root/.ssh/root@osp1.dc2.crunchtools.com.pub root@master3.ocp1.dc2.crunchtools.com
 ssh-copy-id -i /root/.ssh/root@osp1.dc2.crunchtools.com.pub root@node1.ocp1.dc2.crunchtools.com
 ssh-copy-id -i /root/.ssh/root@osp1.dc2.crunchtools.com.pub root@node2.ocp1.dc2.crunchtools.com
 ssh-copy-id -i /root/.ssh/root@osp1.dc2.crunchtools.com.pub root@node3.ocp1.dc2.crunchtools.com
@@ -59,9 +61,16 @@ subscription-manager register
 
 
 # openshift
+Prepare subscription manager entitlements for openshift
+```
 subscription-manager attach --pool=8a85f9815404b7da0154071f610f73db
 subscription-manager repos --disable="*"
 subscription-manager repos --enable=rhel-7-server-rpms --enable=rhel-7-server-extras-rpms --enable=rhel-7-server-optional-rpms --enable=rhel-7-server-supplementary-rpms --enable=rhel-7-server-rh-common-rpms --enable="rhel-7-server-ose-3.4-rpms"
+```
 
+Run the installer
+```
+atomic-openshift-installer
+```
 
 # Atomic Tools Container
