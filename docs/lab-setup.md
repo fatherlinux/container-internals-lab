@@ -81,5 +81,6 @@ atomic-openshift-installer
 2. The storage node must be RHEL
 3. The haproxy node for the masters must be on RHEL. Could not find that information in the docs
 4. hostnamectl overwrites /etc/resolve.conf configuration (not sure why)
+5. Don't bind mount root's home directory with -v /root:/root or -v /root:/root:Z. This will make unexpected changes to the permissions of root's home directory and cause serious system problems
 
 # Atomic Tools Container
