@@ -21,7 +21,6 @@ NETWORKING=YES
 
 ```
 hostnamectl set-hostname master1.ocp1.dc2.crunchtools.com
-echo "nameserver 192.168.122.1" > /etc/resolv.conf
 ```
 
 ```
