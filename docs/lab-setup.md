@@ -8,6 +8,7 @@ Configure all IP addresses statically to make things consistent when running the
 BOOTPROTO=static
 IPADDR=192.168.122.200
 ONBOOT=yes
+DNS1=192.168.122.1
 -UUID
 ```
 
