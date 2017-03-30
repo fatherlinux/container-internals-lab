@@ -7,6 +7,8 @@ docker)
   echo "USER        PID %CPU %MEM VSZ    RSS   TTY      STAT START   TIME COMMAND"
   ps aux --forest \
     | grep -v grep \
+    | grep -v openshift \
+    | grep -v etcd \
     | grep -v $0 \
     | grep docker \
     | sed 's/.*/&\n/' \
