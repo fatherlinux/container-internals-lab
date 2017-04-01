@@ -36,13 +36,13 @@ export)
     do
         virsh dumpxml ${server}.${domain} > ${output_directory}/L103118-${server}.${domain}.xml
         sed -e '/<uuid>.*<\/uuid>$/d' -i ${output_directory}/L103118-${server}.${domain}.xml
-        sed -e "s#${input_directory}/${server}.${domain}#${output_directory}/${server}.${domain}.qcow2#" -i ${output_directory}/L103118-${server}.${domain}.xml
+        sed -e "s#${input_directory}/${server}.${domain}#${output_directory}/${server}.${domain}.raw#" -i ${output_directory}/L103118-${server}.${domain}.xml
         sed -e "s#${server}.${domain}#L103118-${server}.${domain}#" -i ${output_directory}/L103118-${server}.${domain}.xml
     done
 
     for server in $all_servers
     do
-        if [ ! -f ${output_directory}/L103118-${server}.${domain}.raw ] && [ ! -f ${output_directory}/L103118-${server}.${domain}.qcow2 ]
+        if [ ! -f ${output_directory}/L103118-${server}.${domain}.raw ] && [ ! -f ${output_directory}/L103118-${server}.${domain}.xz ]
         then
             dd if=${input_directory}/${server}.${domain} of=${output_directory}/L103118-${server}.${domain}.raw
 	    # echo "dd if=${input_directory}/${server}.${domain} of=${output_directory}/L103118-${server}.${domain}.raw"
@@ -50,7 +50,7 @@ export)
 
         if [ -f ${output_directory}/L103118-${server}.${domain}.raw ]
         then
-            qemu-img convert -O qcow2 -c ${output_directory}/L103118-${server}.${domain}.raw ${output_directory}/L103118-${server}.${domain}.qcow2
+            xz --verbose ${output_directory}/L103118-${server}.${domain}.raw
         fi
     done
   ;;
