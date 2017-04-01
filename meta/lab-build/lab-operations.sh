@@ -30,20 +30,23 @@ prep)
   ;;
 export)
     input_directory="/dev/RHEL7CSB"
-    output_directory="/run/media/fatherlinux/passport-1TB/tmp/container-internals-lab"
+    output_directory="/srv/data/tmp/container-internals-lab"
 
     for server in $all_servers
     do
         virsh dumpxml ${server}.${domain} > ${output_directory}/L103118-${server}.${domain}.xml
-        sed -e "#<uuid>.*</uuid>$#d" -i ${output_directory}/L103118-${server}.${domain}.xml
-        sed -e "s#${input_directory}/${server}.${domain}#${output_directory}/L103118-${server}.${domain}.raw#" -i ${output_directory}/L103118-${server}.${domain}.xml
+        sed -e '/<uuid>.*<\/uuid>$/d' -i ${output_directory}/L103118-${server}.${domain}.xml
+        sed -e "s#${input_directory}/${server}.${domain}#${output_directory}/${server}.${domain}.raw#" -i ${output_directory}/L103118-${server}.${domain}.xml
         sed -e "s#${server}.${domain}#L103118-${server}.${domain}#" -i ${output_directory}/L103118-${server}.${domain}.xml
     done
 
     for server in $all_servers
     do
-        # dd if=${input_directory}/${server}.${domain} of=${output_directory}/L103118-${server}.${domain}.raw
-	echo "dd if=${input_directory}/${server}.${domain} of=${output_directory}/L103118-${server}.${domain}.raw"
+        if [ ! -f ${output_directory}/L103118-${server}.${domain}.raw ]
+        then
+            dd if=${input_directory}/${server}.${domain} of=${output_directory}/L103118-${server}.${domain}.raw
+	    # echo "dd if=${input_directory}/${server}.${domain} of=${output_directory}/L103118-${server}.${domain}.raw"
+        fi
     done
   ;;
 command)
@@ -53,7 +56,7 @@ command)
     done
   ;;
 *)
-  echo "Usage: container-processes {test|prep|export}"
+  echo "Usage: container-processes {test|prep|export|command}"
   ;;
 esac
 
