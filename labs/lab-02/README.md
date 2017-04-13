@@ -8,15 +8,12 @@ cd /root/work/container-internals-lab/labs/lab-02/
 ## Excercise 1
 The goal is to understand the difference between base images and multi-layered images (repositories). Try to understand the difference between an image layer and a repository.
 
-First, let's take a look at a base image. Notice there is no parent image (at least, nothing with a tag - but more on that later).
-```
-docker inspect rhel7
-```
+First, let's take a look at a base image. Notice there is no parent image. This is a base image and it is designed to be built upon.
 ```
 docker run --rm --privileged -v /var/run/docker.sock:/var/run/docker.sock nate/dockviz images -t
 ```
 
-Now, build a multi-layered image
+Now, build a multi-layered image:
 ```
 docker build -t rhel7-change:test exercise-01/
 ```
