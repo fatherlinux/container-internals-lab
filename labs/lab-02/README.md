@@ -83,7 +83,7 @@ docker inspect rhel7/rhel:test
 
 
 ## Exercise 3
-Now, let's tak a look at what's inside the container image. Java is particularly interesting because it uses glibc.
+In this exercise we will take a look at what's inside the container image. Java is particularly interesting because it uses glibc.
 ```
 docker run -it registry.access.redhat.com/jboss-eap-7/eap70-openshift ldd -v -r /usr/lib/jvm/java-1.8.0-openjdk/jre/bin/java
 ```
@@ -125,3 +125,58 @@ rpm -qf /lib64/libcrypto.so.10
 ```
 
 What does this all mean? Well, it means you need to be ready to rebuild all of your container images any time there is a security vulnerability in one of the libraries inside one of your container images...
+
+
+
+## Exercise 4
+Using containers is as much of a business advantage as a technical one.  When building and using containers, everything is about layering.  You want to look at your application and think about each of the pieces and how they work together.  Similar to the way you can break up a program into a series of classes and functions.  Containers are made up of packages and scripts that combine with other containers to build your application. So approach containers with the mindset that your application is made up of smaller units and the packaging of those units into something easily consumable will make your containerized application.
+
+The purpose of layering is to provide a thin level of abstraction above the previous layer to build something more complex.  Layers are logical units where the contents are the same type of object or perform a similar task.
+The right amount of layers will make your container easily consumable.  Too many layers will be too complex and too little, difficult to consume. The proper amount of layers for an application should reflect the complexity of your application.  The more complex the application, the more layers and vice versa. For example, if a Hello World container prints to stdout “Hello World” there’s no configuration, no process management, and no dependencies, so it’s a single layer.  However, if we expand the Hello World application to say hello to the user, we will need a second layer to gather input.
+
+We are going to inspect a simple three tier supply chain with a core build two different pieces of a middleware (Ruby and PHP) and an example application (wordpress). This will demonstrate how development and operations collaberate to create, yet maintain separatation of concerns, and make user space changes in the container image to deliver applications which can easily be updated when needed.
+
+This exercise has subdirectories which contain a Dockerfile for each layer. Take a look at each one and notice the separation of concerns between development and operations. Pay particular attention to the FROM directive in each file:
+```
+cd exercise-04/
+for i in */Dockerfile; do less $i; done
+```
+
+Initiate a single node build with all of the Dockerfiles using the Makefile. Watch the output - notice the yum updates and installs that are happening. Also, notice that the corebuild is built before any of the other layers:
+```
+make
+```
+
+Now, inspect the images which were built:
+```
+docker images
+```
+
+```
+wordpress                                                   latest              0257c101e2b3        4 minutes ago       294.7 MB
+httpd-ruby                                                  latest              99aace3c31f2        16 minutes ago      338.6 MB
+httpd-php                                                   latest              7b7f6eefa4ec        19 minutes ago      273.8 MB
+corebuild                                                   latest              f87d9be15b22        22 minutes ago      207.8 MB
+```
+
+Now, initiate a distributed build on the OpenShift cluster. The yaml file below will create everything you need. Once the builds complete, the images will be placed in the OpenShift registry and are usable in the cluster:
+```
+oc new-project lab02-exercise04
+oc create -f exercise-04/AutomaticSupplyChain.yaml
+```
+
+Inspect the builds in the web interface. Notice how the OpenShift BuildConfigs cause cascading builds to automatically happen and distributes the builds to the cluster.
+```
+https://haproxy1.ocp1.dc2.crunchtools.com:8443/console/project/lab02-exercise04/browse/builds
+```
+
+When the core build completes, inspect some of the dependent builds. Pay particular attention to the "Node:" and "Events:" sections
+```
+oc describe pod wordpress-1-build
+oc describe pod httpd-ruby-1-build
+```
+
+These images can now be used to build (BuildConfigs) and Deploy (DeploymentConfigs) other applications:
+```
+oc get is
+```
