@@ -1,4 +1,4 @@
-# Lab 2 Excercises
+# Lab 4 Exercises
 Get into the right directory
 ```
 cd /root/work/container-internals-lab/labs/lab-04/
