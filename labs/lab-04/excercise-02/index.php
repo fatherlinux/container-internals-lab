@@ -7,7 +7,7 @@
 	$myfile = fopen("goodbad.txt", "r") or die("Unable to open file!");
 	$goodbad = fread($myfile,filesize("goodbad.txt"));
 	fclose($myfile);
-	if ($goodbad == 1) {
+	if ($goodbad > 6 ) {
 		echo '<p>Hello World</p>';
 	}
 	else {
