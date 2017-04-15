@@ -21,7 +21,7 @@ metadata:
   labels:
     name: goodbad
 spec:
-  replicas: 3
+  replicas: 10
   template:
     metadata:
       labels:
