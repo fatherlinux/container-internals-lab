@@ -22,9 +22,9 @@ spec:
       name: goodbad:latest
   resources: {}
   source:
-    contextDir: goodbad
+    contextDir: labs/lab-04/excercise-02
     git:
-      uri: https://github.com/fatherlinux/
+      uri: https://github.com/fatherlinux/container-internals-lab
     type: Git
   strategy:
     dockerStrategy:
