@@ -11,8 +11,8 @@
 		echo '<p>Hello World</p>';
 	}
 	else {
-		echo '<p>500 ERROR</p>';
-		header($_SERVER['SERVER_PROTOCOL'] . ' 500 Internal Server Error', true, 500);
+		echo '<p>ERROR</p>';
+		#header($_SERVER['SERVER_PROTOCOL'] . ' 500 Internal Server Error', true, 500);
 	}
 ?>
  </body>
