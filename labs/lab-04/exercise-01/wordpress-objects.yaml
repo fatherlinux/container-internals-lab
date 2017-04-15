@@ -1,0 +1,152 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    name: mysql
+  name: mysql
+spec:
+  ports:
+    # the port that this service should serve on
+    - port: 3306
+  # label keys and values that must match in order to receive traffic for this service
+  selector:
+    name: mysql
+---
+apiVersion: v1
+kind: Service
+metadata: 
+  labels: 
+    name: wpfrontend
+  name: wpfrontend
+spec: 
+  ports:
+    # the port that this service should serve on
+    - port: 80
+      targetPort: wordpress
+  # label keys and values that must match in order to receive traffic for this service
+  selector: 
+    name: wordpress
+  type: LoadBalancer
+---
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  name: mysql
+  labels:
+    name: mysql
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        name: mysql
+    spec:
+      containers:
+      - name: mysql
+        image: openshift3/mysql-55-rhel7
+        env:
+          - name: MYSQL_ROOT_PASSWORD
+            value: pizza
+          - name: MYSQL_USER
+            value: pizza
+          - name: MYSQL_PASSWORD
+            value: pizza
+          - name: MYSQL_DATABASE
+            value: wp_db
+        ports:
+          - containerPort: 3306
+            name: mysql
+        volumeMounts:
+          - name: mysql-persistent-storage
+            mountPath: /var/lib/mysql/data
+      volumes:
+        - name: mysql-persistent-storage
+          persistentVolumeClaim:
+           claimName: claim-mysql
+---
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  name: wordpress
+  labels:
+    name: wordpress
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        name: wordpress
+    spec:
+      containers:
+      - name: wordpress
+        image: 172.30.168.105:5000/lab02-exercise04/wordpress
+        env:
+          - name: WORDPRESS_DB_USER
+            value: pizza
+          - name: WORDPRESS_DB_PASSWORD
+            value: pizza
+          - name: WORDPRESS_DB_NAME
+            value: wp_db
+          - name: WORDPRESS_DB_HOST
+            value: mysql
+          - name: AUTH_KEY
+            value: ''
+          - name: SECURE_AUTH_KEY
+            value: ''
+          - name: LOGGED_IN_KEY
+            value: ''
+          - name: NONCE_KEY
+            value: ''
+          - name: AUTH_SALT
+            value: ''
+          - name: SECURE_AUTH_SALT
+            value: ''
+          - name: LOGGED_IN_SALT
+            value: ''
+          - name: NONCE_SALT
+            value: ''
+        ports:
+          - containerPort: 8080
+            name: wordpress
+        volumeMounts:
+          - name: wordpress-persistent-storage
+            mountPath: /var/www/html
+      volumes:
+        - name: wordpress-persistent-storage
+          persistentVolumeClaim:
+           claimName: claim-wp
+---
+apiVersion: v1
+kind: Route
+metadata:
+  labels:
+    name: wpfrontend
+  name: wpfrontend
+spec:
+  host: wpfrontend-wordpress.apps.example.com
+  to:
+    kind: Service
+    name: wpfrontend
+status: {}
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: claim-wp
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: claim-mysql
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 2Gi
