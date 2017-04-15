@@ -2,7 +2,6 @@
 Get into the right directory
 ```
 cd /root/work/container-internals-lab/labs/lab-02/
-
 ```
 
 
