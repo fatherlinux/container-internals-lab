@@ -80,19 +80,19 @@ Test with AB
 ## Exercise 3
 The goal of this exercies is to understand the nature of a distributed systems environment with containers.
 
-cd /root/work/container-internals-lab/labs/lab-04/excercise-03
+excercise-03/
 
 Inspect each of the files and try to understand them a bit:
 ```
-vi Build.yaml
+vi excercise-03/Build.yaml
 ```
 ```
-vi Run.yaml
+vi excercise-03/Run.yaml
 ````
 
 Build the test application. Wait for the build to successfully complete. You can watch the log output in the OpenShift web interface.
 ```
-oc create -f Build.yaml
+oc create -f excercise-03/Build.yaml
 ```
 ```
 oc get builds
@@ -100,7 +100,7 @@ oc get builds
 
 Run the test application
 ```
-oc create -f Run.yaml
+oc create -f excercise-03/Run.yaml
 ```
 
 Get the IP address for the goodbad service
@@ -119,7 +119,7 @@ cat index.php
 cat Dockerfile
 ```
 
-Troubleshoot the problem in a programatic way. Notice some pods have numbers that are lower than 7, this means the mod will return a bad response:
+Troubleshoot the problem in a programatic way. Notice some pods have files which contian numbers that are lower than 7, this means the pod will return a bad response:
 ```
 for i in `oc get pods | grep goodbad | grep -v build | awk '{print $1}'`; do oc exec -t $i -- cat /var/www/html/goodbad.txt; done
 ```
