@@ -78,9 +78,9 @@ Test with AB
 
 
 ## Exercise 3
-The goal of this exercies is to understand the nature of a distributed systems environment with containers.
+The goal of this exercies is to understand the nature of a distributed systems environment with containers. Quickly and easily troubleshooting problems in containers requires distributed systems thinking. You have to think of things programatically. You can't just ssh into a server and understand the problem. You can execute commands in a sinlge pod, but even that might prevent you from troubleshooting things like network, or database connection errrors which are specific to only certain pods. 
 
-excercise-03/
+These types of problems can be the most difficult to troubleshoot, but we will learn how to figure things out quickly and easily. We will use a test application specifically built to break in random pods.
 
 Inspect each of the files and try to understand them a bit:
 ```
@@ -111,6 +111,31 @@ oc get svc
 Now test the cluster IP with curl. Use the cluster IP address so that the traffic is balanced among the active pods. You will notice some errors in your responses. You may also test with a browser. Some of the pods are different - how could this be? They should be identical because they were built from code right?
 ```
 for i in {1..20}; do curl 172.30.206.56; done
+```
+
+Example output:
+```
+<html>
+ <head>
+  <title>PHP Test</title>
+ </head>
+ <body>
+ <p>ERROR</p> </body>
+</html>
+<html>
+ <head>
+  <title>PHP Test</title>
+ </head>
+ <body>
+ <p>Hello World</p> </body>
+</html>
+<html>
+ <head>
+  <title>PHP Test</title>
+ </head>
+ <body>
+ <p>Hello World</p> </body>
+</html>
 ```
 
 Take a look at the code. A random number is generated in the entrypoint and written to a file in /var/www/html/goodbad.txt:
