@@ -1,5 +1,5 @@
 #!/bin/bash
 set -e
-
-echo (( ( RANDOM % 2 )  + 1 )) > /var/www/html/goodbad.txt
+let "number = $RANDOM % 2 +1"
+echo $number > /var/www/html/goodbad.txt
 exec "$@"
