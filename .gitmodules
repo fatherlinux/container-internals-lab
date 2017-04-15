@@ -1,6 +1,3 @@
 [submodule "labs/lab-02/exercise-04"]
 	path = labs/lab-02/exercise-04
 	url = https://github.com/fatherlinux/container-supply-chain.git
-[submodule "labs/lab-04/exercise-01"]
-	path = labs/lab-04/exercise-01
-	url = https://github.com/fatherlinux/wordpress-demo.git
