@@ -78,9 +78,9 @@ Test with AB
 
 
 ## Exercise 3
-The goal of this exercies is to understand the nature of a distributed systems environment with containers. Quickly and easily troubleshooting problems in containers requires distributed systems thinking. You have to think of things programatically. You can't just ssh into a server and understand the problem. You can execute commands in a sinlge pod, but even that might prevent you from troubleshooting things like network, or database connection errrors which are specific to only certain pods. 
+The goal of this exercise is to understand the nature of a distributed systems environment with containers. Quickly and easily troubleshooting problems in containers requires distributed systems thinking. You have to think of things programatically. You can't just ssh into a server and understand the problem. You can execute commands in a sinlge pod, but even that might prevent you from troubleshooting things like network, or database connection errrors which are specific to only certain pods. This can happen because of persnickety differences in locations of your compute nodes in a cloud environment or code that only fails in unforseen ways at scale or under load. 
 
-These types of problems can be the most difficult to troubleshoot, but we will learn how to figure things out quickly and easily. We will use a test application specifically built to break in random pods.
+We are going to simulate one of these problems by using a specially designed test application. In this exercise we will learn how to figure things out quickly and easily.
 
 Inspect each of the files and try to understand them a bit:
 ```
