@@ -82,6 +82,14 @@ The goal of this exercies is to understand the nature of a distributed systems e
 
 cd /root/work/container-internals-lab/labs/lab-04/excercise-03
 
+Inspect each of the files and try to understand them a bit:
+```
+vi Build.yaml
+```
+```
+vi Run.yaml
+````
+
 Build the test application. Wait for the build to successfully complete. You can watch the log output in the OpenShift web interface.
 ```
 oc create -f Build.yaml
