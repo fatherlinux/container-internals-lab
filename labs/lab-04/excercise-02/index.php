@@ -5,7 +5,7 @@
  <body>
  <?php 
 	$myfile = fopen("goodbad.txt", "r") or die("Unable to open file!");
-	i$goodbad = fread($myfile,filesize("goodbad.txt"));
+	$goodbad = fread($myfile,filesize("goodbad.txt"));
 	fclose($myfile);
 	if ($goodbad == 1) {
 		echo '<p>Hello World</p>';
