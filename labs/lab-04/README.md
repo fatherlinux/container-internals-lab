@@ -59,22 +59,47 @@ You may notice the wordpress pod enter a state called CrashLoopBackOff. This is 
 oc describe pod wordpress-
 ```
 
+Visit the web interface and run through the wordpress installer:
+```
+http://wpfrontend-wordpress.apps.example.com/
+```
+
 In this exercise you learned how to deploy a fully functional two tier application with a single command (oc create -f excercise-01/wordpress-objects.yaml). As long as the cluster has peristnet volumes available to satisify the application, an end user can do this on their laptop, in a development environment or in production data centers all over the world. All of the dependent code is packaged up and delivered in the container images - all of the data and configuration comes from the environment. Production instances will access production persistent volumes, development environments can be seeded with copies of production data, etc. It's easy to see why container orchestration is so powerful. 
 
 
 
 ## Exercise 2
-In this exercise, you will test scale and load test a distributed application
+In this exercise, you will scale and load test a distributed application
 
-Test with AB before
+Test with AB before we scale the application to get a base line. We will run this command from the privileged rhel-tools container on the master node:
+```
+ab -n100 -c 10 -k -H "Accept-Encoding: gzip, deflate" http://wpfrontend-wordpress.apps.example.com/
+```
 
-Scale in interface
+Scale in interface. Click the up arrow and scale to 3 nodes:
+```
+https://haproxy1.ocp1.dc2.crunchtools.com:8443/console/project/lab02-exercise04/overview
+```
 
-Scale with command line
+Test with AB. The response time should now be lower.
+```
+ab -n100 -c 10 -k -H "Accept-Encoding: gzip, deflate" http://wpfrontend-wordpress.apps.example.com/
+```
 
-Test with AB
+Scale with command line. Run the follwing command to scale with the command line:
+```
+oc scale --replicas=5 rc/wordpress
+```
 
+Test with AB. The response time should now be even lower.
+```
+ab -n100 -c 10 -k -H "Accept-Encoding: gzip, deflate" http://wpfrontend-wordpress.apps.example.com/
+```
 
+Scale the application back down to one pod:
+```
+oc scale --replicas=1 rc/wordpress
+```
 
 
 ## Exercise 3
