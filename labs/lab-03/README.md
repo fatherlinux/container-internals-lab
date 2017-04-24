@@ -60,20 +60,75 @@ Prepare to inspect what containerd is doing. Replace the -p argument with the PI
 strace -f -s4096 -e clone,getpid -p 10516
 ```
 
-In a second terminal, run some commands, and inspect what happens in terminal 1. You will what containerd fire off CLONE system calls to the kernel and create the container:
+In a second terminal, run some commands, and inspect what happens in terminal 1. You will what containerd fire off clone() system calls to the kernel and create the container. The different flags passed to clone() are what determine which kernel namespaces will be used (network, pid, uid, gid, etc):
 ```
 docker run -it rhel7 bash
 ```
 
 
 ## Exercise 3
-The goal of this exercise is to gain a basic understanding of SECCOMP
+The goal of this exercise is to gain a basic understanding of SELinux/sVirt. Run the following commands. Notice that each container is labeled with a dynamically generated MLS label. In the example below, the first container has an MLS label of c791,c940, while the second has a label of c169,c416. This extra layer of labeling prevents the processes from accessing each other's memory, files, etc:
+```
+docker run -t rhel7 sleep 10 &
+docker run -t rhel7 sleep 10 &
+sleep 3
+ps -efZ | grep svirt | grep sleep
+```
+
+Output:
+```
+system_u:system_r:svirt_lxc_net_t:s0:c791,c940 root 54810 54796  1 00:40 pts/7 00:00:00 sleep 10
+system_u:system_r:svirt_lxc_net_t:s0:c169,c416 root 54872 54858  1 00:40 pts/8 00:00:00 sleep 10
+```
+
+SELinux doesn't just label the processes, it must also label the files accessed by the process. Make a directory for data, and inspect the selinux label on the directory. Notice the type is set to "user_tmp_t" but there are no MLS labels set:
+```
+mkdir /tmp/selinux-test
+ls -alhZ /tmp/selinux-test/
+```
+
+Output:
+```
+drwxr-xr-x. root root unconfined_u:object_r:user_tmp_t:s0 .
+drwxrwxrwt. root root system_u:object_r:tmp_t:s0       ..
+```
+
+Now, run the following command a few times and notice the MLS labels change every time. This is sVirt at work:
+```
+docker run -t -v /tmp/selinux-test:/tmp/selinux-test:Z rhel7 ls -alhZ /tmp/selinux-test
+```
+
+Output:
+```
+drwxr-xr-x. root root system_u:object_r:svirt_sandbox_file_t:s0:c395,c498 .
+drwxrwxrwt. root root system_u:object_r:svirt_sandbox_file_t:s0:c395,c498 ..
+```
+
+Look at the MLS label set on the directory, it is always the same as the last container that was run. The :Z option auto-labels and bind mounts so that the container can acess and change files in the mount. This prevents any other process from accessing this data. It's done transparently to the end user.
+```
+ls -alhZ /tmp/selinux-test/
+```
 
 ## Exercise 4
-The goal of this exercise is to gain a basic understanding of SELinux
+The goal of this exercise is to gain a basic understanding of cgroups. Run two separate containerized sleep processes. Notice how each are put in their own cgroups. 
+```
+docker run -t rhel7 sleep 10 &
+docker run -t rhel7 sleep 10 &
+sleep 3
+for i in `docker ps | grep sleep | awk '{print $1}' | grep [0-9]`; do find /sys/fs/cgroup/ | grep $i; done
+```
 
 ## Exercise 5
-The goal of this exercise is to gain a basic understanding of cgroups
+The goal of this exercise is to gain a basic understanding of SECCOMP. Take a look at this sample. This can be a very powerful tool to block malbehaved containers:
+```
+cat exercise-05/chmod.json
+```
+
+Now, run a container with this profile and test if it works. Notice how the chmod system call is blocked.
+```
+docker run -it --security-opt seccomp:exercise-05/chmod.json rhel7 chmod 777 /etc/hosts
+```
+
 
 ## Exercise 6
 The goal of this exercise is to gain a basic understanding of storage
@@ -108,7 +163,7 @@ dmsetup status docker-253:0-1402402-db523524bfa345fd768dfc1f89dadb01de3e42490347
 This is a 10G thin volume
 
 
-## Exercise 6
+## Exercise 7
 The goal of this exercise is to gain a basic understanding of container networking. First, start a container in OpenShift to work with:
 ```
 oc run --restart=Never --attach --stdin --tty --image rhel7/rhel rhel-test bash
@@ -183,7 +238,7 @@ Output:
 ```
 
 
-## Exercise 7
+## Exercise 8
 The goal of this exercise is to gain a basic understanding of the overlay network that enables multi-container networking. On any node, insepct the openvswtich container. Notice that the container is started with the following three options: --privileged --net=host --pid=host. These three options make this container super privileged similar to running a normal process as root. They also place the containerized proecess in the host's network namespace and process id namespace. Essentially, this privileged container only uses mount namespace to utilize a container image for delivery of software - hence, it has very limited containment.
 
 ```
@@ -216,5 +271,4 @@ REG0[],goto_table:1
  cookie=0x0, duration=89147.180s, table=8, n_packets=0, n_bytes=0, priority=100,ip,nw_dst=10.1.2.0/24 actions=move:NXM_NX_REG0[]->NXM_NX_TUN_ID[0..31],set_field:192.168.122.202->tun_dst,output:1
  cookie=0x0, duration=89147.145s, table=8, n_packets=0, n_bytes=0, priority=100,ip,nw_dst=10.1.5.0/24 actions=move:NXM_NX_REG0[]->NXM_NX_TUN_ID[0..31],set_field:192.168.122.203->tun_dst,output:1
  cookie=0x0, duration=89147.040s, table=8, n_packets=0, n_bytes=0, priority=100,ip,nw_dst=10.1.3.0/24 actions=move:NXM_NX_REG0[]->NXM_NX_TUN_ID[0..31],set_field:192.168.122.204->tun_dst,output:1
-
 ```
