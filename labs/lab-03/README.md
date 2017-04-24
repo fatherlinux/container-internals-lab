@@ -41,21 +41,6 @@ Now that you have an understanding of the different daemons, take a look at all 
 ps aux --forest
 ```
 
-Optional: if you are ahead of the class, feel free to explore a layer deeper. In three terminals run the following commands. In the first terminal, prepare to inspect what dockerd is doing. Use megaproc to get the PID and replace the -p argument. The same logic can be done to explore the OpenShift controller, api, and node daemons:
-```
-strace -f -s1024 -e read,write -p 10510 2>&1 | grep -e "GET " -e "POST " -e "PUT " -e " 200 " -e " 400 "
-```
-
-In the second terminal, prepare to inspect what containerd is doing. Use megaproc to get the PID and replace the -p argument:
-```
-strace -f -s4096 -e clone,getpid -p 10516
-```
-
-In the third terminal, run some commands, and inspect what happens in terminal 1 & 2. You will get a better understanding of what dockerd does and what containerd does:
-```
-docker images
-docker run -it rhel7 bash
-```
 
 ## Exercise 2
 The goal of this exercise is to gain a basic understanding of system calls and kernel namespaces. Linux system calls are a standard API interface to the Linux kernel. Every process in a Linux operating system uses system calls to gain access to resources (CPU, RAM, etc) and kernel data structures (files, file permissions, processes, sockets, pipes, etc).
@@ -65,9 +50,19 @@ First, let's inspect the system calls that a common command makes. If you have d
 strace sleep 5
 ```
 
-Now, let's inspect a containerized version of the same command:
+Now, let's inspect a containerized version of the same command. Use megaproc to get the PID and replace the -p argument:
+```
+./exercise-01/mega-proc.sh docker
 ```
 
+Prepare to inspect what containerd is doing. Replace the -p argument with the PID for containerd:
+```
+strace -f -s4096 -e clone,getpid -p 10516
+```
+
+In a second terminal, run some commands, and inspect what happens in terminal 1. You will what containerd fire off CLONE system calls to the kernel and create the container:
+```
+docker run -it rhel7 bash
 ```
 
 
@@ -111,3 +106,115 @@ dmsetup status docker-253:0-1402402-db523524bfa345fd768dfc1f89dadb01de3e42490347
 0 is starting point
 20971520 (10GB) is length
 This is a 10G thin volume
+
+
+## Exercise 6
+The goal of this exercise is to gain a basic understanding of container networking. First, start a container in OpenShift to work with:
+```
+oc run --restart=Never --attach --stdin --tty --image rhel7/rhel rhel-test bash
+```
+
+Once the container becomes active, bring up another terminal and run the the rest of the tests:
+```
+oc describe pod rhel-test
+```
+
+Output: 
+```
+Name:			rhel-test
+Namespace:		lab02-exercise04
+Security Policy:	anyuid
+Node:			node3.ocp1.dc2.crunchtools.com/192.168.122.205
+```
+
+Now, ssh into the node where the pod is running and run the following commands. Notice that there are actually two docker containers running. One represents the pod and helps setup the network namespace, the second container actually runs the bash process. They both share the same network namespace.
+```
+docker ps | grep rhel-test
+```
+
+Output
+```
+56948c9d6a92        rhel7/rhel                                       "bash"                   6 minutes ago       Up 6 minutes                            k8s_rhel-test.e4ff8054_rhel-test_lab02-exercise04_0c5a6e56-25a3-11e7-9d46-525400b431c8_b46e2f45
+093e63116819        openshift3/ose-pod:v3.4.1.10                     "/pod"                   6 minutes ago       Up 6 minutes                            k8s_POD.5aa7dc24_rhel-test_lab02-exercise04_0c5a6e56-25a3-11e7-9d46-525400b431c8_39480ba2
+```
+
+We can verify that both docker containers are placed in the same kernel network namespace, by verifying that they are using the same TCP stack.
+```
+nsenter -t `docker inspect --format '{{ .State.Pid }}' 093e63116819` -n ip addr
+nsenter -t `docker inspect --format '{{ .State.Pid }}' 56948c9d6a92` -n ip addr
+```
+
+Output for both
+```
+1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN qlen 1
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+    inet 127.0.0.1/8 scope host lo
+       valid_lft forever preferred_lft forever
+    inet6 ::1/128 scope host 
+       valid_lft forever preferred_lft forever
+3: eth0@if94: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1450 qdisc noqueue state UP 
+    link/ether ce:43:4c:7d:59:68 brd ff:ff:ff:ff:ff:ff link-netnsid 0
+    inet 10.1.4.2/24 scope global eth0
+       valid_lft forever preferred_lft forever
+    inet6 fe80::cc43:4cff:fe7d:5968/64 scope link 
+       valid_lft forever preferred_lft forever
+```
+
+Now, inspect the type of docker networking. OpenShift communicates with docker and starts a container with the None Mode networking. This causes a namespace to be created in the kernel, and then OpenShift configures the network. OpenShift then communicates with docker to start a second container with Container Mode networking, which places the bash process in the same network namespace as the first container. We can verify this with the following commands:
+
+For the pod container:
+```
+docker inspect 093e63116819 | grep NetworkMode
+```
+
+Output:
+```
+"NetworkMode": "none",
+```
+
+For the process container:
+```
+docker inspect 56948c9d6a92 | grep NetworkMode
+```
+
+Output:
+```
+"NetworkMode": "container:093e63116819781a2536587cf0af7d3a2e9c2444d3ddf143d4af5c85bda4a344"
+```
+
+
+## Exercise 7
+The goal of this exercise is to gain a basic understanding of the overlay network that enables multi-container networking. On any node, insepct the openvswtich container. Notice that the container is started with the following three options: --privileged --net=host --pid=host. These three options make this container super privileged similar to running a normal process as root. They also place the containerized proecess in the host's network namespace and process id namespace. Essentially, this privileged container only uses mount namespace to utilize a container image for delivery of software - hence, it has very limited containment.
+
+```
+ps -ef | grep "name openvswitch" | grep -v grep
+```
+
+```
+/usr/bin/docker-current run --name openvswitch --rm --privileged --net=host --pid=host -v /lib/modules:/lib/modules -v /run:/run -v /sys:/sys:ro -v /etc/origin/openvswitch:/etc/openvswitch openshift3/openvswitch:v3.4.1.10
+``` 
+
+Exec into the container and look at the network. We have to run this command from inside of the openvswitch contianer because OVS is NOT installed on the Atomic Host. This really demonstrates the elegance of Linux Contianers. Even software such as Open vSwitch can be placed in a container. Notice that the tun0 interface has a different IP address on each node in the OpenShift cluster. Run the "ip addr" command on several masters or nodes in the cluster.
+```
+docker exec -t openvswitch ovs-vsctl show
+docker exec -t openvswitch ip addr
+```
+
+Inspect the flow rules. There are specific flow rules for each of the other nodes in the cluster. OpenShift manages all of this for the administrator as nodes are added/removed.
+```
+docker exec -t openvswitch ovs-ofctl dump-flows br0 --protocols=OpenFlow13 | grep nw_dst=10.1
+```
+
+Output:
+```
+REG0[],goto_table:1
+ cookie=0x0, duration=89147.397s, table=5, n_packets=0, n_bytes=0, priority=300,ip,nw_dst=10.1.0.1 actions=output:2
+ cookie=0x0, duration=89147.374s, table=5, n_packets=0, n_bytes=0, priority=200,ip,nw_dst=10.1.0.0/24 actions=goto_table:7
+ cookie=0x0, duration=89147.357s, table=5, n_packets=0, n_bytes=0, priority=100,ip,nw_dst=10.1.0.0/16 actions=goto_table:8
+ cookie=0x0, duration=89147.233s, table=8, n_packets=0, n_bytes=0, priority=100,ip,nw_dst=10.1.4.0/24 actions=move:NXM_NX_REG0[]->NXM_NX_TUN_ID[0..31],set_field:192.168.122.205->tun_dst,output:1
+ cookie=0x0, duration=89147.204s, table=8, n_packets=0, n_bytes=0, priority=100,ip,nw_dst=10.1.1.0/24 actions=move:NXM_NX_REG0[]->NXM_NX_TUN_ID[0..31],set_field:192.168.122.201->tun_dst,output:1
+ cookie=0x0, duration=89147.180s, table=8, n_packets=0, n_bytes=0, priority=100,ip,nw_dst=10.1.2.0/24 actions=move:NXM_NX_REG0[]->NXM_NX_TUN_ID[0..31],set_field:192.168.122.202->tun_dst,output:1
+ cookie=0x0, duration=89147.145s, table=8, n_packets=0, n_bytes=0, priority=100,ip,nw_dst=10.1.5.0/24 actions=move:NXM_NX_REG0[]->NXM_NX_TUN_ID[0..31],set_field:192.168.122.203->tun_dst,output:1
+ cookie=0x0, duration=89147.040s, table=8, n_packets=0, n_bytes=0, priority=100,ip,nw_dst=10.1.3.0/24 actions=move:NXM_NX_REG0[]->NXM_NX_TUN_ID[0..31],set_field:192.168.122.204->tun_dst,output:1
+
+```
