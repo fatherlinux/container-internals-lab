@@ -20,9 +20,13 @@ test)
 prep)
     for server in $ocp_servers
     do
+        ssh $ssh_options root@${server}.${domain} docker pull registry.access.redhat.com/rhel7/rhel:latest
         ssh $ssh_options root@${server}.${domain} docker pull rhel7
+        ssh $ssh_options root@${server}.${domain} docker pull registry.access.redhat.com/rhel7/rhel-atomic:latest
+        ssh $ssh_options root@${server}.${domain} docker pull rhel7-atomic
         ssh $ssh_options root@${server}.${domain} docker pull rhel7/rhel-tools
         ssh $ssh_options root@${server}.${domain} docker pull nate/dockviz
+        ssh $ssh_options root@${server}.${domain} docker pull registry.access.redhat.com/jboss-eap-7/eap70-openshift
         ssh $ssh_options root@${server}.${domain} docker pull openshift3/ose-haproxy-router
         ssh $ssh_options root@${server}.${domain} docker pull openshift3/ose-docker-registry
         ssh $ssh_options root@${server}.${domain} docker pull openshift3/registry-console
