@@ -35,12 +35,12 @@ oc get pvc
 
 The application needs storage for the MySQL tables, and Web Root for Apache. Let's inspect the yaml file which will create the storage. We will create four persistent volumes - two that have 1GB of storage and two that will have 2GB of storage. These perisistent volumes will reside on the storage node and use NFS:
 ```
-vi excercise-01/persistent-volumes.yaml
+vi exercise-01/persistent-volumes.yaml
 ```
 
 Instantiate the peristent volumes:
 ```
-oc create -f excercise-01/persistent-volumes.yaml
+oc create -f exercise-01/persistent-volumes.yaml
 ```
 
 Now, the persistent volume claims for the application will become Bound and satisfy the storage requirements:
