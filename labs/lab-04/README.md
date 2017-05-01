@@ -14,7 +14,7 @@ First, inspect the application that we are going to create. We will start with t
 
 Notice, there is only a single Route in this definition. That's because Services are internal to the Kubernetes cluster, while Routes expose the service externally. We only want to expose our Web Server externally, not our Database:
 ```
-vi excercise-01/wordpress-objects.yaml
+vi exercise-01/wordpress-objects.yaml
 ```
 
 Now, let's create an application:
