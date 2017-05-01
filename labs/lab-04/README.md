@@ -14,12 +14,12 @@ First, inspect the application that we are going to create. We will start with t
 
 Notice, there is only a single Route in this definition. That's because Services are internal to the Kubernetes cluster, while Routes expose the service externally. We only want to expose our Web Server externally, not our Database:
 ```
-vi excercise-01/wordpress-objects.yaml
+vi exercise-01/wordpress-objects.yaml
 ```
 
 Now, let's create an application:
 ```
-oc create -f excercise-01/wordpress-objects.yaml
+oc create -f exercise-01/wordpress-objects.yaml
 ```
 
 Look at the status of the application. The two pods that make up this application will remain in a "pending" state - why?
@@ -35,12 +35,12 @@ oc get pvc
 
 The application needs storage for the MySQL tables, and Web Root for Apache. Let's inspect the yaml file which will create the storage. We will create four persistent volumes - two that have 1GB of storage and two that will have 2GB of storage. These perisistent volumes will reside on the storage node and use NFS:
 ```
-vi excercise-01/persistent-volumes.yaml
+vi exercise-01/persistent-volumes.yaml
 ```
 
 Instantiate the peristent volumes:
 ```
-oc create -f excercise-01/persistent-volumes.yaml
+oc create -f exercise-01/persistent-volumes.yaml
 ```
 
 Now, the persistent volume claims for the application will become Bound and satisfy the storage requirements:
@@ -78,7 +78,7 @@ ab -n100 -c 10 -k -H "Accept-Encoding: gzip, deflate" http://wpfrontend-wordpres
 
 Scale in interface. Click the up arrow and scale to 3 nodes:
 ```
-https://haproxy1.ocp1.dc2.crunchtools.com:8443/console/project/lab02-exercise04/overview
+https://ose3-master.example.com:8443/console/project/lab02-exercise04/overview
 ```
 
 Test with AB. The response time should now be lower.
@@ -109,15 +109,15 @@ We are going to simulate one of these problems by using a specially designed tes
 
 Inspect each of the files and try to understand them a bit:
 ```
-vi excercise-03/Build.yaml
+vi exercise-03/Build.yaml
 ```
 ```
-vi excercise-03/Run.yaml
+vi exercise-03/Run.yaml
 ````
 
 Build the test application. Wait for the build to successfully complete. You can watch the log output in the OpenShift web interface.
 ```
-oc create -f excercise-03/Build.yaml
+oc create -f exercise-03/Build.yaml
 ```
 ```
 oc get builds
@@ -125,7 +125,7 @@ oc get builds
 
 Run the test application
 ```
-oc create -f excercise-03/Run.yaml
+oc create -f exercise-03/Run.yaml
 ```
 
 Get the IP address for the goodbad service

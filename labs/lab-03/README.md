@@ -67,7 +67,7 @@ docker run -it rhel7 bash
 
 
 ## Exercise 3
-The goal of this exercise is to gain a basic understanding of SELinux/sVirt. Run the following commands. Notice that each container is labeled with a dynamically generated MLS label. In the example below, the first container has an MLS label of c791,c940, while the second has a label of c169,c416. This extra layer of labeling prevents the processes from accessing each other's memory, files, etc:
+The goal of this exercise is to gain a basic understanding of SELinux/sVirt. Run the following commands. Notice that each container is labeled with a dynamically generated MLS label. In the example below, the first container has an MLS label of c791,c940, while the second has a label of c169,c416. This extra layer of labeling prevents the processes from accessing each other's memory, files, etc. Copy and paste all four lines below, into a terminal:
 ```
 docker run -t rhel7 sleep 10 &
 docker run -t rhel7 sleep 10 &
@@ -110,7 +110,7 @@ ls -alhZ /tmp/selinux-test/
 ```
 
 ## Exercise 4
-The goal of this exercise is to gain a basic understanding of cgroups. Run two separate containerized sleep processes. Notice how each are put in their own cgroups. 
+The goal of this exercise is to gain a basic understanding of cgroups. Run two separate containerized sleep processes. Notice how each are put in their own cgroups. Copy and paste all four lines below, into a terminal:
 ```
 docker run -t rhel7 sleep 10 &
 docker run -t rhel7 sleep 10 &
@@ -129,9 +129,18 @@ Now, run a container with this profile and test if it works. Notice how the chmo
 docker run -it --security-opt seccomp:exercise-05/chmod.json rhel7 chmod 777 /etc/hosts
 ```
 
-
 ## Exercise 6
-The goal of this exercise is to gain a basic understanding of storage
+The goal of this exercise is to gain a basic understanding of storage. Using "docker inspect" you can find the layers used in a particular container by looking at the GraphDriver -> Data.
+```
+docker inspect openshift3/ose-pod:v3.4.1.10 | grep GraphDriver -A 7
+```
+
+In The Class: The lab is set up with a tech preview of overlay2 support. Overlay2 makes it extremely easy to see the filesystem contents of every container because each directory represents a layer from the inspect output. Feel free to dig around in the directories based on the output of the above inspect command.
+```
+ ls -alh /var/lib/docker/overlay2/
+ ````
+
+Optional Homework: With device mapper, which is the default configuration in RHEL7 and Atomic Host
 ```
 dmsetup ls --tree -o inverted
 ```
@@ -163,7 +172,7 @@ dmsetup status docker-253:0-1402402-db523524bfa345fd768dfc1f89dadb01de3e42490347
 This is a 10G thin volume
 
 
-## Exercise 7
+## Optional: Exercise 7
 The goal of this exercise is to gain a basic understanding of container networking. First, start a container in OpenShift to work with:
 ```
 oc run --restart=Never --attach --stdin --tty --image rhel7/rhel rhel-test bash
@@ -195,8 +204,10 @@ Output
 
 We can verify that both docker containers are placed in the same kernel network namespace, by verifying that they are using the same TCP stack.
 ```
-nsenter -t `docker inspect --format '{{ .State.Pid }}' 093e63116819` -n ip addr
-nsenter -t `docker inspect --format '{{ .State.Pid }}' 56948c9d6a92` -n ip addr
+DID=`docker ps | grep rhel-test | grep pod | awk '{print $1}'`
+nsenter -t `docker inspect --format '{{ .State.Pid }}' $DID` -n ip addr
+DID=`docker ps | grep rhel-test | grep bash | awk '{print $1}'`
+nsenter -t `docker inspect --format '{{ .State.Pid }}' $DID` -n ip addr
 ```
 
 Output for both
@@ -219,7 +230,8 @@ Now, inspect the type of docker networking. OpenShift communicates with docker a
 
 For the pod container:
 ```
-docker inspect 093e63116819 | grep NetworkMode
+DID=`docker ps | grep rhel-test | grep pod | awk '{print $1}'`
+docker inspect $DID | grep NetworkMode
 ```
 
 Output:
@@ -229,16 +241,20 @@ Output:
 
 For the process container:
 ```
-docker inspect 56948c9d6a92 | grep NetworkMode
+DID=`docker ps | grep rhel-test | grep bash | awk '{print $1}'`
+docker inspect $DID | grep NetworkMode
 ```
 
-Output:
+Example Output:
 ```
 "NetworkMode": "container:093e63116819781a2536587cf0af7d3a2e9c2444d3ddf143d4af5c85bda4a344"
 ```
 
 
-## Exercise 8
+## Optional: Exercise 8
+
+*NOTE: There was change to this lab last minute, so the commands below need to be ran outside of a cotnainer. The concepts are identical and show that the network operates the same way whether OVS is containerized or not.
+
 The goal of this exercise is to gain a basic understanding of the overlay network that enables multi-container networking. On any node, insepct the openvswtich container. Notice that the container is started with the following three options: --privileged --net=host --pid=host. These three options make this container super privileged similar to running a normal process as root. They also place the containerized proecess in the host's network namespace and process id namespace. Essentially, this privileged container only uses mount namespace to utilize a container image for delivery of software - hence, it has very limited containment.
 
 ```

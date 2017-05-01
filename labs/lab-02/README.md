@@ -83,7 +83,7 @@ docker inspect rhel7/rhel:test
 
 
 ## Exercise 3
-In this exercise we will take a look at what's inside the container image. Java is particularly interesting because it uses glibc.
+In this exercise we will take a look at what's inside the container image. Java is particularly interesting because it uses glibc. The ldd command shows you all of the libraries that a binary is linked against. These libraries have to be on the system, or the binary will not run. In this example, you can see that getting a JVM to run in a particular container, with the exact same behavior, requries having it compiled and linked in the same way.
 ```
 docker run -it registry.access.redhat.com/jboss-eap-7/eap70-openshift ldd -v -r /usr/lib/jvm/java-1.8.0-openjdk/jre/bin/java
 ```
@@ -103,11 +103,17 @@ Take a look at all of the libraries curl is linked against:
 ldd /usr/bin/curl
 ```
 
-Let's see what packages deliver those libraries? Both, OpenSSL, and the Network Security Services libraries.
+Let's see what packages deliver those libraries? Both, OpenSSL, and the Network Security Services libraries. When there is a new CVE discovered in either nss or oepnssl, a new container image will need built to patch it.
 ```
 rpm -qf /lib64/libssl.so.10
 rpm -qf /lib64/libssl3.so
 ```
+
+Exit the rhel-tools container:
+```
+exit
+```
+
 
 It's a similar story with Apache and most other daemons and utilities that rely on libraries for security, or deep hardware integration:
 ```
@@ -124,27 +130,30 @@ Once again we find a library provided by OpenSSL:
 rpm -qf /lib64/libcrypto.so.10
 ```
 
+Exit the httpd24 container:
+```
+exit
+```
+
 What does this all mean? Well, it means you need to be ready to rebuild all of your container images any time there is a security vulnerability in one of the libraries inside one of your container images...
 
 
 
-## Exercise 4
-Using containers is as much of a business advantage as a technical one.  When building and using containers, everything is about layering.  You want to look at your application and think about each of the pieces and how they work together.  Similar to the way you can break up a program into a series of classes and functions.  Containers are made up of packages and scripts that combine with other containers to build your application. So approach containers with the mindset that your application is made up of smaller units and the packaging of those units into something easily consumable will make your containerized application.
+## Optional: Exercise 4
+Using containers is as much a business advantage as a technical one.  When building and using containers, everything is about layering.  You want to look at your application and think about each of the pieces and how they work together.  Similar to the way you can break up a program into a series of classes and functions.  Containers are made up of packages and scripts that combine with other containers to build your application. So approach containers with the mindset that your application is made up of smaller units and the packaging of those units into something easily consumable will make your containerized application.
 
-The purpose of layering is to provide a thin level of abstraction above the previous layer to build something more complex.  Layers are logical units where the contents are the same type of object or perform a similar task.
-The right amount of layers will make your container easily consumable.  Too many layers will be too complex and too little, difficult to consume. The proper amount of layers for an application should reflect the complexity of your application.  The more complex the application, the more layers and vice versa. For example, if a Hello World container prints to stdout “Hello World” there’s no configuration, no process management, and no dependencies, so it’s a single layer.  However, if we expand the Hello World application to say hello to the user, we will need a second layer to gather input.
+The purpose of layering is to provide a thin level of abstraction above the previous layer to build something more complex.  Layers are logical units where the contents are the same type of object or perform a similar task. The right amount of layers will make your container easily consumable.  Too many layers will be too complex and too little, difficult to consume. The proper amount of layers for an application should reflect the complexity of your application.  The more complex the application, the more layers and vice versa. For example, if a Hello World container prints to stdout “Hello World” there’s no configuration, no process management, and no dependencies, so it’s a single layer.  However, if we expand the Hello World application to say hello to the user, we will need a second layer to gather input.
 
-We are going to inspect a simple three tier supply chain with a core build two different pieces of a middleware (Ruby and PHP) and an example application (wordpress). This will demonstrate how development and operations collaberate to create, yet maintain separatation of concerns, and make user space changes in the container image to deliver applications which can easily be updated when needed.
+To demonstrate the layered approach, we are going to inspect a simple three tier supply chain with a core build two different pieces of a middleware (Ruby and PHP) and an example application (wordpress). This will demonstrate how development and operations collaberate, yet maintain separatation of concerns, to build containers and make user space changes, over time, in the container image to deliver applications which can easily be updated when needed.
 
 This exercise has subdirectories which contain a Dockerfile for each layer. Take a look at each one and notice the separation of concerns between development and operations. Pay particular attention to the FROM directive in each file:
 ```
-cd exercise-04/
-for i in */Dockerfile; do less $i; done
+for i in exercise-04/*/Dockerfile; do less $i; done
 ```
 
 Initiate a single node build with all of the Dockerfiles using the Makefile. Watch the output - notice the yum updates and installs that are happening. Also, notice that the corebuild is built before any of the other layers:
 ```
-make
+make -C ./exercise-04/
 ```
 
 Now, inspect the images which were built:
