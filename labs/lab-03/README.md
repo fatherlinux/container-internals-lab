@@ -172,7 +172,7 @@ dmsetup status docker-253:0-1402402-db523524bfa345fd768dfc1f89dadb01de3e42490347
 This is a 10G thin volume
 
 
-## Exercise 7
+## Optional: Exercise 7
 The goal of this exercise is to gain a basic understanding of container networking. First, start a container in OpenShift to work with:
 ```
 oc run --restart=Never --attach --stdin --tty --image rhel7/rhel rhel-test bash
@@ -249,7 +249,7 @@ Output:
 ```
 
 
-## Exercise 8
+## Optional: Exercise 8
 The goal of this exercise is to gain a basic understanding of the overlay network that enables multi-container networking. On any node, insepct the openvswtich container. Notice that the container is started with the following three options: --privileged --net=host --pid=host. These three options make this container super privileged similar to running a normal process as root. They also place the containerized proecess in the host's network namespace and process id namespace. Essentially, this privileged container only uses mount namespace to utilize a container image for delivery of software - hence, it has very limited containment.
 
 ```
