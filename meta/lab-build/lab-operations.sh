@@ -38,6 +38,7 @@ prep)
         ssh $ssh_options root@${server}.${domain} docker pull openshift3/ose-docker-registry
         ssh $ssh_options root@${server}.${domain} docker pull openshift3/registry-console
         ssh $ssh_options root@${server}.${domain} docker pull openshift3/mysql-55-rhel7
+	ssh $ssh_options root@${server}.${domain} docker pull registry.access.redhat.com/rhscl/httpd-24-rhel7
     done
   ;;
 export)
