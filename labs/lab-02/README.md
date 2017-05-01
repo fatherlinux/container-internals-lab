@@ -148,13 +148,12 @@ To demonstrate the layered approach, we are going to inspect a simple three tier
 
 This exercise has subdirectories which contain a Dockerfile for each layer. Take a look at each one and notice the separation of concerns between development and operations. Pay particular attention to the FROM directive in each file:
 ```
-cd exercise-04/
-for i in */Dockerfile; do less $i; done
+for i in exercise-04/*/Dockerfile; do less $i; done
 ```
 
 Initiate a single node build with all of the Dockerfiles using the Makefile. Watch the output - notice the yum updates and installs that are happening. Also, notice that the corebuild is built before any of the other layers:
 ```
-make
+make -C ./exercise-04/
 ```
 
 Now, inspect the images which were built:
