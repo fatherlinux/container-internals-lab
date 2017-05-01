@@ -181,7 +181,7 @@ for i in `oc get pods | grep goodbad | grep -v build | awk '{print $1}'`; do oc 
 
 Write a quick test that verifies the logic of your fix
 ```
-for i in {1..2000}; do curl 172.30.206.56 2>&1; done | grep "Hello World" | wc -l
+for i in {1..2000}; do curl `oc get svc | grep goodbad | awk '{print $2}'` 2>&1; done | grep "Hello World" | wc -l
 ```
 
 Scale up the nodes, and test again. Notice it's broken again because new pods have been added with the broken file
