@@ -109,15 +109,15 @@ We are going to simulate one of these problems by using a specially designed tes
 
 Inspect each of the files and try to understand them a bit:
 ```
-vi excercise-03/Build.yaml
+vi exercise-03/Build.yaml
 ```
 ```
-vi excercise-03/Run.yaml
+vi exercise-03/Run.yaml
 ````
 
 Build the test application. Wait for the build to successfully complete. You can watch the log output in the OpenShift web interface.
 ```
-oc create -f excercise-03/Build.yaml
+oc create -f exercise-03/Build.yaml
 ```
 ```
 oc get builds
@@ -125,7 +125,7 @@ oc get builds
 
 Run the test application
 ```
-oc create -f excercise-03/Run.yaml
+oc create -f exercise-03/Run.yaml
 ```
 
 Get the IP address for the goodbad service
