@@ -103,11 +103,17 @@ Take a look at all of the libraries curl is linked against:
 ldd /usr/bin/curl
 ```
 
-Let's see what packages deliver those libraries? Both, OpenSSL, and the Network Security Services libraries.
+Let's see what packages deliver those libraries? Both, OpenSSL, and the Network Security Services libraries. When there is a new CVE discovered in either nss or oepnssl, a new container image will need built to patch it.
 ```
 rpm -qf /lib64/libssl.so.10
 rpm -qf /lib64/libssl3.so
 ```
+
+Exit the rhel-tools container:
+```
+exit
+```
+
 
 It's a similar story with Apache and most other daemons and utilities that rely on libraries for security, or deep hardware integration:
 ```
