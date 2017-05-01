@@ -22,7 +22,7 @@ spec:
       name: goodbad:latest
   resources: {}
   source:
-    contextDir: labs/lab-04/excercise-02
+    contextDir: labs/lab-04/exercise-02
     git:
       uri: https://github.com/fatherlinux/container-internals-lab
     type: Git
