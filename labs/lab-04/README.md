@@ -78,7 +78,7 @@ ab -n100 -c 10 -k -H "Accept-Encoding: gzip, deflate" http://wpfrontend-wordpres
 
 Scale in interface. Click the up arrow and scale to 3 nodes:
 ```
-https://haproxy1.ocp1.dc2.crunchtools.com:8443/console/project/lab02-exercise04/overview
+https://ose3-master.example.com:8443/console/project/lab02-exercise04/overview
 ```
 
 Test with AB. The response time should now be lower.
