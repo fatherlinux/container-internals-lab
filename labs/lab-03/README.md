@@ -67,7 +67,7 @@ docker run -it rhel7 bash
 
 
 ## Exercise 3
-The goal of this exercise is to gain a basic understanding of SELinux/sVirt. Run the following commands. Notice that each container is labeled with a dynamically generated MLS label. In the example below, the first container has an MLS label of c791,c940, while the second has a label of c169,c416. This extra layer of labeling prevents the processes from accessing each other's memory, files, etc:
+The goal of this exercise is to gain a basic understanding of SELinux/sVirt. Run the following commands. Notice that each container is labeled with a dynamically generated MLS label. In the example below, the first container has an MLS label of c791,c940, while the second has a label of c169,c416. This extra layer of labeling prevents the processes from accessing each other's memory, files, etc. Copy and paste all four lines below, into a terminal:
 ```
 docker run -t rhel7 sleep 10 &
 docker run -t rhel7 sleep 10 &
@@ -110,7 +110,7 @@ ls -alhZ /tmp/selinux-test/
 ```
 
 ## Exercise 4
-The goal of this exercise is to gain a basic understanding of cgroups. Run two separate containerized sleep processes. Notice how each are put in their own cgroups. 
+The goal of this exercise is to gain a basic understanding of cgroups. Run two separate containerized sleep processes. Notice how each are put in their own cgroups. Copy and paste all four lines below, into a terminal:
 ```
 docker run -t rhel7 sleep 10 &
 docker run -t rhel7 sleep 10 &
