@@ -130,6 +130,11 @@ Once again we find a library provided by OpenSSL:
 rpm -qf /lib64/libcrypto.so.10
 ```
 
+Exit the httpd24 container:
+```
+exit
+```
+
 What does this all mean? Well, it means you need to be ready to rebuild all of your container images any time there is a security vulnerability in one of the libraries inside one of your container images...
 
 
