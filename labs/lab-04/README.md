@@ -19,7 +19,7 @@ vi exercise-01/wordpress-objects.yaml
 
 Now, let's create an application:
 ```
-oc create -f excercise-01/wordpress-objects.yaml
+oc create -f exercise-01/wordpress-objects.yaml
 ```
 
 Look at the status of the application. The two pods that make up this application will remain in a "pending" state - why?
