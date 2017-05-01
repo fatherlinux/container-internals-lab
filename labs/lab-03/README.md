@@ -230,7 +230,8 @@ Now, inspect the type of docker networking. OpenShift communicates with docker a
 
 For the pod container:
 ```
-docker inspect 093e63116819 | grep NetworkMode
+DID=`docker ps | grep rhel-test | grep pod | awk '{print $1}'`
+docker inspect $DID | grep NetworkMode
 ```
 
 Output:
@@ -240,10 +241,11 @@ Output:
 
 For the process container:
 ```
-docker inspect 56948c9d6a92 | grep NetworkMode
+DID=`docker ps | grep rhel-test | grep bash | awk '{print $1}'`
+docker inspect $DID | grep NetworkMode
 ```
 
-Output:
+Example Output:
 ```
 "NetworkMode": "container:093e63116819781a2536587cf0af7d3a2e9c2444d3ddf143d4af5c85bda4a344"
 ```
