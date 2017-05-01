@@ -83,7 +83,7 @@ docker inspect rhel7/rhel:test
 
 
 ## Exercise 3
-In this exercise we will take a look at what's inside the container image. Java is particularly interesting because it uses glibc.
+In this exercise we will take a look at what's inside the container image. Java is particularly interesting because it uses glibc. The ldd command shows you all of the libraries that a binary is linked against. These libraries have to be on the system, or the binary will not run. In this example, you can see that getting a JVM to run in a particular container, with the exact same behavior, requries having it compiled and linked in the same way.
 ```
 docker run -it registry.access.redhat.com/jboss-eap-7/eap70-openshift ldd -v -r /usr/lib/jvm/java-1.8.0-openjdk/jre/bin/java
 ```
