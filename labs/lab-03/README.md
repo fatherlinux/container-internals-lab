@@ -204,8 +204,9 @@ Output
 
 We can verify that both docker containers are placed in the same kernel network namespace, by verifying that they are using the same TCP stack.
 ```
-DID=`docker ps | grep rhel-test | grep bash | awk '{print $1}'`
+DID=`docker ps | grep rhel-test | grep pod | awk '{print $1}'`
 nsenter -t `docker inspect --format '{{ .State.Pid }}' $DID` -n ip addr
+DID=`docker ps | grep rhel-test | grep bash | awk '{print $1}'`
 nsenter -t `docker inspect --format '{{ .State.Pid }}' $DID` -n ip addr
 ```
 
