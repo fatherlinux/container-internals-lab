@@ -135,7 +135,8 @@ oc get svc
 
 Now test the cluster IP with curl. Use the cluster IP address so that the traffic is balanced among the active pods. You will notice some errors in your responses. You may also test with a browser. Some of the pods are different - how could this be? They should be identical because they were built from code right?
 ```
-for i in {1..20}; do curl 172.30.206.56; done
+SVC_IP=`oc get svc | grep goodbad | awk '{print $2}'`
+for i in {1..20}; do curl $SVC_IP; done
 ```
 
 Example output:
@@ -165,8 +166,8 @@ Example output:
 
 Take a look at the code. A random number is generated in the entrypoint and written to a file in /var/www/html/goodbad.txt:
 ```
-cat index.php
-cat Dockerfile
+cat exercise-03/index.php
+cat exercise-03/Dockerfile
 ```
 
 Troubleshoot the problem in a programatic way. Notice some pods have files which contian numbers that are lower than 7, this means the pod will return a bad response:
@@ -181,13 +182,13 @@ for i in `oc get pods | grep goodbad | grep -v build | awk '{print $1}'`; do oc 
 
 Write a quick test that verifies the logic of your fix
 ```
-for i in {1..2000}; do curl 172.30.206.56 2>&1; done | grep "Hello World" | wc -l
+for i in {1..2000}; do curl $SVC_IP 2>&1; done | grep "Hello World" | wc -l
 ```
 
 Scale up the nodes, and test again. Notice it's broken again because new pods have been added with the broken file
 ```
 oc scale rc goodbad --replicas=10
-for i in {1..2000}; do curl 172.30.206.56 2>&1; done | grep "Hello World" | wc -l
+for i in {1..2000}; do curl $SVC_IP 2>&1; done | grep "Hello World" | wc -l
 ```
 
 Optional: As a final challenge, fix the problem permanently by fixing the logic so that the number is always above 7 and never causes the application to break. Rebuild, and redeploy the applicaion. Hint: you have to get the images to redeploy with the newer versions (delete the rc) :-)
