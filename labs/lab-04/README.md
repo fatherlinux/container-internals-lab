@@ -135,7 +135,7 @@ oc get svc
 
 Now test the cluster IP with curl. Use the cluster IP address so that the traffic is balanced among the active pods. You will notice some errors in your responses. You may also test with a browser. Some of the pods are different - how could this be? They should be identical because they were built from code right?
 ```
-for i in {1..20}; do curl 172.30.206.56; done
+for i in {1..20}; do curl `oc get svc | grep goodbad | awk '{print $2}'`; done
 ```
 
 Example output:
@@ -165,8 +165,8 @@ Example output:
 
 Take a look at the code. A random number is generated in the entrypoint and written to a file in /var/www/html/goodbad.txt:
 ```
-cat index.php
-cat Dockerfile
+cat exercise-03/index.php
+cat exercise-03/Dockerfile
 ```
 
 Troubleshoot the problem in a programatic way. Notice some pods have files which contian numbers that are lower than 7, this means the pod will return a bad response:
