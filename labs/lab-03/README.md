@@ -129,9 +129,18 @@ Now, run a container with this profile and test if it works. Notice how the chmo
 docker run -it --security-opt seccomp:exercise-05/chmod.json rhel7 chmod 777 /etc/hosts
 ```
 
-
 ## Exercise 6
-The goal of this exercise is to gain a basic understanding of storage
+The goal of this exercise is to gain a basic understanding of storage. Using "docker inspect" you can find the layers used in a particular container by looking at the GraphDriver -> Data.
+```
+docker inspect openshift3/ose-pod:v3.4.1.10 | grep GraphDriver -A 7
+```
+
+In The Class: The lab is set up with a tech preview of overlay2 support. Overlay2 makes it extremely easy to see the filesystem contents of every container because each directory represents a layer from the inspect output. Feel free to dig around in the directories based on the output of the above inspect command.
+```
+ ls -alh /var/lib/docker/overlay2/
+ ````
+
+Optional Homework: With device mapper, which is the default configuration in RHEL7 and Atomic Host
 ```
 dmsetup ls --tree -o inverted
 ```
