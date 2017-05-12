@@ -176,7 +176,7 @@ oc create -f exercise-04/AutomaticSupplyChain.yaml
 
 Inspect the builds in the web interface. Notice how the OpenShift BuildConfigs cause cascading builds to automatically happen and distributes the builds to the cluster.
 ```
-https://haproxy1.ocp1.dc2.crunchtools.com:8443/console/project/lab02-exercise04/browse/builds
+https://ose-master.example.com:8443/console/project/lab02-exercise04/browse/builds
 ```
 
 When the core build completes, inspect some of the dependent builds. Pay particular attention to the "Node:" and "Events:" sections
