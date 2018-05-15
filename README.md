@@ -1,6 +1,10 @@
 # Background
 This repository contains the labs scripts, files, and associated material for learn.openshift.com/subsystems. Directories are arranged by lab and step.
 
+- lab1-step3 - Containers mega-proc.sh script to pretty print daemons running on system
+- lab2-step1 - Contains Dockerfile for test builds
+- lab2-step4 - Containers Dockerfiles, Makefile, and OpenShift automated build files. Checked the centos7 branch from https://github.com/fatherlinux/container-internals-lab.git
+
 The ASCII Doc conent for the actual lab is located here:
 
 https://github.com/fatherlinux/learn-katacoda/tree/master/subsystems
