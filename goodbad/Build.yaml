@@ -30,7 +30,7 @@ spec:
     dockerStrategy:
       from:
         kind: DockerImage
-        name: registry.access.redhat.com/ubi7/php-72
+        name: quay.io/fatherlinux/httpd-php
     type: Docker
   triggers:
   - github:
