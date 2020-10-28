@@ -6,3 +6,4 @@ COPY ./docker-entrypoint.sh /entrypoint.sh
 COPY ./index.php /var/www/html/index.php
 
 ENTRYPOINT ["/entrypoint.sh"]
+CMD /usr/libexec/s2i/run
