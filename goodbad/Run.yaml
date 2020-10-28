@@ -29,7 +29,7 @@ spec:
     spec:
       containers:
       - name: goodbad
-        image: 172.30.170.9:5000/lab02-exercise04/goodbad
+        image: docker-registry.default.svc:5000/default/goodbad:latest
         ports:
           - containerPort: 8080
             name: goodbad
