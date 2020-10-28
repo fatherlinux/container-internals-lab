@@ -22,7 +22,7 @@ spec:
       name: goodbad:latest
   resources: {}
   source:
-    contextDir: lab4-step3
+    contextDir: goodbad
     git:
       uri: https://github.com/fatherlinux/container-internals-lab
     type: Git
@@ -30,7 +30,7 @@ spec:
     dockerStrategy:
       from:
         kind: DockerImage
-        name: httpd-php:latest
+        name: registry.access.redhat.com/ubi7/php-72
     type: Docker
   triggers:
   - github:

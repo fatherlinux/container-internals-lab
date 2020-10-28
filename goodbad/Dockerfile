@@ -1,4 +1,4 @@
-FROM httpd-php
+FROM registry.access.redhat.com/ubi7/php-72
 
 MAINTAINER fatherlinux <scott.mccarty@gmail.com>
 
