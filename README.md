@@ -5,7 +5,7 @@ This repository contains the labs scripts, files, and associated material for le
 - lab2-step1 - Contains Dockerfile for test builds
 - lab2-step4 - Containers Dockerfiles, Makefile, and OpenShift automated build files. Checked out during environmental init from the centos7 branch of the https://github.com/fatherlinux/container-internals-lab.git repository
 
-The ASCII Doc conent for the actual lab is located here:
+The ASCII Doc content for the actual lab is located here:
 
 https://github.com/fatherlinux/learn-katacoda/tree/master/subsystems
 
